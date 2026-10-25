@@ -6,11 +6,24 @@ from openai import OpenAI
 # Load the API key from the local .env file
 load_dotenv()
 
+def get_groq_api_key():
+    api_key = os.getenv("GROQ_API_KEY")
+
+    if api_key:
+        return api_key
+
+    try:
+        import streamlit as st
+        return st.secrets["GROQ_API_KEY"]
+    except Exception:
+        return None
+
+
 
 def generate_draft(user_request: str) -> str:
     """Generate the first draft based on the user's request."""
 
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = get_groq_api_key()
 
     if not api_key:
         raise ValueError("GROQ_API_KEY is missing. Check your .env file.")
@@ -51,7 +64,7 @@ def improve_draft(original_draft: str, feedback: str) -> str:
     if not feedback.strip():
         raise ValueError("Please provide feedback before improving the draft.")
 
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = get_groq_api_key()
 
     if not api_key:
         raise ValueError("GROQ_API_KEY is missing. Check your .env file.")
